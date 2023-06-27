@@ -16,23 +16,24 @@ import io.ktor.server.routing.*
 fun Route.feedbackRoute() {
     route("/get-feedback") {
         get {
-            val feedbackId = call.receive<FeedbackRequest>().id
-            val feedback = getFeedbackById(id = feedbackId)
-            feedback?.let { feedbackItem ->
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = FeedbackResponse(
-                        status = true,
-                        message = "Feedback retrieved successfully",
-                        data = feedbackItem
-                    )
-                )
+            val feedbackId = call.request.queryParameters["id"]
+            val feedback = feedbackId?.let { id ->
+                getFeedbackById(id = id)
             } ?: call.respond(
                 status = HttpStatusCode.OK,
                 message = FeedbackResponse(
-                    status = true,
-                    message = "No feedback found",
+                    status = false,
+                    message = "Incorrect or no data provided",
                     data = Unit
+                )
+            )
+
+            call.respond(
+                status = HttpStatusCode.OK,
+                message = FeedbackResponse(
+                    status = true,
+                    message = "Feedback retrieved successfully",
+                    data = feedback
                 )
             )
         }
