@@ -3,7 +3,6 @@ package `in`.androidplay.db
 import `in`.androidplay.data.model.Feedback
 import org.bson.types.ObjectId
 import org.litote.kmongo.coroutine.coroutine
-import org.litote.kmongo.eq
 import org.litote.kmongo.reactivestreams.KMongo
 
 
@@ -26,8 +25,6 @@ suspend fun createOrUpdateFeedback(feedback: Feedback): Boolean {
 }
 
 suspend fun deleteFeedbackById(id: String): Boolean {
-    val feedback = feedbacks.findOne(Feedback::id eq id)
-    feedback?.let { feedbackItem ->
-        return feedbacks.deleteOneById(feedbackItem.id).wasAcknowledged()
-    } ?: return false
+    val feedback = feedbacks.findOneById(id)
+    feedback?.let { return feedbacks.deleteOneById(id).wasAcknowledged() } ?: return false
 }
